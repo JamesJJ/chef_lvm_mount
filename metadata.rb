@@ -1,0 +1,7 @@
+name             'lvm_mount'
+maintainer       'github@jamesjj.net'
+maintainer_email 'github@jamesjj.net'
+license          'MIT'
+description      'Create an LVM volume, format it and mount it'
+long_description      'Create an LVM volume, format it and mount it'
+version          '0.1.0'
