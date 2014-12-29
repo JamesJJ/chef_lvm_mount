@@ -3,7 +3,7 @@ module Chef::Recipe::LVM_MOUNT
     ENV['PATH'] = '/bin:/usr/bin:/sbin:/usr/sbin'
   end
   def self.findDisks(prefixes,limit)
-    _regex = Regexp.new("\A(" + _prefixes.join('|') + ")")
+    _regex = Regexp.new("\A(" + prefixes.join('|') + ")")
     _disks=Array.new()
     _p = IO.readlines('/proc/partitions')
     _p.each do |_d|
