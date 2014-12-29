@@ -14,7 +14,7 @@ module Chef::Recipe::LVM_MOUNT
       _pdev = _d.split(' ')[3]
       next if _pdev.nil?
       Chef::Log.debug("Found disk: " + _pdev)
-      _disks.push(_pdev) if _regex.match(_pdev)
+      _disks.push(_pdev) if _regex.match(_pdev) && !self.isMounted("/dev/" + _pdev)
     end
     _found = _disks.sort.reverse.take(limit||1).collect {|_d| "/dev/" + _d }
     Chef::Log.info("Using disks: " + _found.join(' '))
@@ -23,9 +23,12 @@ module Chef::Recipe::LVM_MOUNT
   def self.isMounted(path)
     _mounts = IO.readlines('/proc/mounts')
     _mounts.each do |_m|
+      next unless /\A\//.match(_m)
       Chef::Log.debug("Found mount: " + _m)
       _mountinfo = _m.split(' ')
-      return 1 if path==_mountinfo[0] 
+      _regex = Regexp.new('\A' + path + '[0-9]*\Z')
+      Chef::Log.debug("Using mounted regex: " + _regex.inspect)
+      return 1 if _regex.match(_mountinfo[0])
       return 2 if path==_mountinfo[1] 
     end
     return nil
@@ -36,8 +39,8 @@ module Chef::Recipe::LVM_MOUNT
     _fs = IO.readlines('/proc/filesystems')
     _fs.each do |_f|
       _fsinfo = _f.split(' ')
-      next if _f[0]=='nodev'
-      Chef::Log.debug("Found filesystem: " + _f[1])
+      next if _fsinfo[0]=='nodev'
+      Chef::Log.debug("Found filesystem: " + _fsinfo[1])
       accepted = _fsinfo[1].to_s if 
         (!acceptable.index(_fsinfo[1].to_s).nil?) && 
         (acceptable.index(_fsinfo[1].to_s).to_i < acceptable.index(accepted).to_i)
