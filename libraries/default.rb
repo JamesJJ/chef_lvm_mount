@@ -52,7 +52,7 @@ module Chef::Recipe::LVM_MOUNT
     return accepted
   end
   def self.pvExists(path)
-    _pv = shell_out('pvdisplay -c')
+    _pv = shell_out!('pvdisplay -c')
     _pv.stdout.each_line {|_pv_line|
       _pv_line.gsub!(/\A\s+/,'')
       _pv_line.gsub!(/\s+\Z/,'')
@@ -80,7 +80,7 @@ module Chef::Recipe::LVM_MOUNT
       _lv_line.gsub!(/\A\s+/,'')
       _lv_line.gsub!(/\s+\Z/,'')
       Chef::Log.debug("Found LV: " + _lv_line)
-      _pvinfo = _lv_line.split(':')
+      _lvinfo = _lv_line.split(':')
       return 1 if path==_lvinfo[0]
       return 2 if path==_lvinfo[1]
     }
