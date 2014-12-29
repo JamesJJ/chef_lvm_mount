@@ -1,4 +1,5 @@
 module Chef::Recipe::LVM_MOUNT
+  include Chef::Mixin::ShellOut
   def initialise
     ENV['PATH'] = '/bin:/usr/bin:/sbin:/usr/sbin'
   end
@@ -37,8 +38,9 @@ module Chef::Recipe::LVM_MOUNT
     return accepted
   end
   def self.pvExists(path)
-    _pv = `pvdisplay -c`
-    _pv.each_line {|_pv_line|
+    _pv = run_command('pvdisplay','-c')
+    return 99 unless _pv.status==0
+    _pv.stdout.each_line {|_pv_line|
       _pv_line.gsub!(/\A\s+/,'')
       _pv_line.gsub!(/\s+\Z/,'')
       _pvinfo = _pv_line.split(':')
