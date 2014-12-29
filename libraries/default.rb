@@ -1,6 +1,7 @@
+require 'chef/mixin/shell_out'
+include Chef::Mixin::ShellOut
+
 module Chef::Recipe::LVM_MOUNT
-  include Chef::Mixin::ShellOut
-  require 'chef/mixin/shell_out'
   def initialise
     ENV['PATH'] = '/bin:/usr/bin:/sbin:/usr/sbin'
   end

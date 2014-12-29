@@ -2,12 +2,14 @@
 # Recipe:: default
 #
 
+# install during the compilation phase!
 package node['lvm_mount']['lvm_package'] do
-  action :install
-end
+  action :nothing
+end.run_action(:install)
 
 node['lvm_mount']['disks'].each do |_disk|
   _prefix = _disk['prefix']
+  _mountpoint = _disk['mountpoint']
   _pv_string = ''
   _best_filesystem = LVM_MOUNT.bestFilesystem(node['lvm_mount']['fs_formats'])
   _format = _disk['filesystem'] || _best_filesystem

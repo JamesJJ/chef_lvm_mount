@@ -13,6 +13,7 @@ default['lvm_mount']['disks'] = [
   filesystem: nil,
   pv: [ '/dev/sdp','/dev/sdq' ],
   size: "99.99G",
+  mountpoint: "/opt",
   mount_options: "auto,defaults"
   }
 ]
