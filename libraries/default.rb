@@ -15,7 +15,7 @@ module Chef::Recipe::LVM_MOUNT
       _pdev = _d.split(' ')[3]
       next if _pdev.nil?
       Chef::Log.debug("Found disk: " + _pdev)
-      _disks.push(_pdev) if _regex.match(_pdev) && !self.isMounted("/dev/" + _pdev)
+      _disks.push(_pdev) if _regex.match(_pdev) && !self.isMounted("/dev/" + _pdev) && !self.pvExists("/dev/" + _pdev)
     end
     _found = _disks.sort.reverse.take(limit||1).collect {|_d| "/dev/" + _d }
     Chef::Log.info("Using disks: " + _found.join(' '))
