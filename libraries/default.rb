@@ -31,7 +31,7 @@ class Chef::Recipe::LVM_MOUNT
       _fsinfo = _f.split(' ')
       accepted = _fsinfo[1].to_s if acceptable.index(_fsinfo[1].to_s) < acceptable.index(accepted)
     end
-    Chef::Log.info("Using filesystem: #{accepted}"
+    Chef::Log.info("Using filesystem: #{accepted}")
     return accepted
   end
   def pvExists(path)
