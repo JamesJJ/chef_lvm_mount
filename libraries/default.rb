@@ -38,8 +38,7 @@ module Chef::Recipe::LVM_MOUNT
     return accepted
   end
   def self.pvExists(path)
-    _pv = run_command('pvdisplay','-c')
-    return 99 unless _pv.status==0
+    _pv = shell_out!('pvdisplay -c')
     _pv.stdout.each_line {|_pv_line|
       _pv_line.gsub!(/\A\s+/,'')
       _pv_line.gsub!(/\s+\Z/,'')
@@ -51,8 +50,8 @@ module Chef::Recipe::LVM_MOUNT
     return nil
   end
   def self.vgExists(path)
-    _vg = `vgdisplay -c`
-    _vg.each_line {|_vg_line|
+    _vg = shell_out!('vgdisplay -c')
+    _vg.stdout.each_line {|_vg_line|
       _vg_line.gsub!(/\A\s+/,'')
       _vg_line.gsub!(/\s+\Z/,'')
       _vginfo = _vg_line.split(':')
@@ -62,8 +61,8 @@ module Chef::Recipe::LVM_MOUNT
     return nil
   end
   def self.lvExists(path)
-    _lv = `lvdisplay -c`
-    _lv.each_line {|_lv_line|
+    _lv = shell_out!('lvdisplay -c')
+    _lv.stdout.each_line {|_lv_line|
       _lv_line.gsub!(/\A\s+/,'')
       _lv_line.gsub!(/\s+\Z/,'')
       _pvinfo = _lv_line.split(':')
