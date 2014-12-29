@@ -2,7 +2,7 @@ class Chef::Recipe::LVM_MOUNT
   def initialise
     ENV['PATH'] = '/bin:/usr/bin:/sbin:/usr/sbin'
   end
-  def findDisks(prefixes,limit)
+  def self.findDisks(prefixes,limit)
     _regex = Regex.new("\A(" + _prefixes.join('|') + ")")
     _disks=Array.new()
     _p = IO.readlines('/proc/partitions')
@@ -13,7 +13,7 @@ class Chef::Recipe::LVM_MOUNT
     _found = _disks.sort.reverse.take(limit||1).collect {|_d| "/dev/" + _d }
     Chef::Log.info("Using disks: " + _found.join(' '))
   end
-  def isMounted(path)
+  def self.isMounted(path)
     _mounts = IO.readlines('/proc/mounts')
     _mounts.each do |_m|
       _mountinfo = _m.split(' ')
@@ -23,7 +23,7 @@ class Chef::Recipe::LVM_MOUNT
     end
     return nil
   end
-  def bestFilesystem(acceptable)
+  def self.bestFilesystem(acceptable)
     acceptable = [ 'xfs','ext4','ext3','ext2' ] unless acceptable.kind_of?(Array)
     accepted = 'ext2'
     _fs = IO.readlines('/proc/filesystems')
@@ -34,7 +34,7 @@ class Chef::Recipe::LVM_MOUNT
     Chef::Log.info("Using filesystem: #{accepted}")
     return accepted
   end
-  def pvExists(path)
+  def self.pvExists(path)
     _pv = `pvdisplay -c`
     _pv.each_line {|_pv_line|
       _pv_line.gsub!(/\A\s+/,'')
@@ -46,7 +46,7 @@ class Chef::Recipe::LVM_MOUNT
     }
     return nil
   end
-  def vgExists(path)
+  def self.vgExists(path)
     _vg = `vgdisplay -c`
     _vg.each_line {|_vg_line|
       _vg_line.gsub!(/\A\s+/,'')
@@ -57,7 +57,7 @@ class Chef::Recipe::LVM_MOUNT
     }
     return nil
   end
-  def lvExists(path)
+  def self.lvExists(path)
     _lv = `lvdisplay -c`
     _lv.each_line {|_lv_line|
       _lv_line.gsub!(/\A\s+/,'')
