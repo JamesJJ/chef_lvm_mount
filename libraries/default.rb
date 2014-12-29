@@ -1,5 +1,5 @@
 module Chef::Recipe::LVM_MOUNT
-  include Chef::Mixin::ShellOut
+  include Chef::ShellOut
   def initialise
     ENV['PATH'] = '/bin:/usr/bin:/sbin:/usr/sbin'
   end
@@ -38,7 +38,7 @@ module Chef::Recipe::LVM_MOUNT
     return accepted
   end
   def self.pvExists(path)
-    _pv = Chef::Mixin::ShellOut.shell_out!('pvdisplay -c')
+    _pv = Chef::ShellOut.shell_out!('pvdisplay -c')
     _pv.stdout.each_line {|_pv_line|
       _pv_line.gsub!(/\A\s+/,'')
       _pv_line.gsub!(/\s+\Z/,'')
@@ -50,7 +50,7 @@ module Chef::Recipe::LVM_MOUNT
     return nil
   end
   def self.vgExists(path)
-    _vg = Chef::Mixin::ShellOut.shell_out!('vgdisplay -c')
+    _vg = Chef::ShellOut.shell_out!('vgdisplay -c')
     _vg.stdout.each_line {|_vg_line|
       _vg_line.gsub!(/\A\s+/,'')
       _vg_line.gsub!(/\s+\Z/,'')
@@ -61,7 +61,7 @@ module Chef::Recipe::LVM_MOUNT
     return nil
   end
   def self.lvExists(path)
-    _lv = Chef::Mixin::ShellOut.shell_out!('lvdisplay -c')
+    _lv = Chef::ShellOut.shell_out!('lvdisplay -c')
     _lv.stdout.each_line {|_lv_line|
       _lv_line.gsub!(/\A\s+/,'')
       _lv_line.gsub!(/\s+\Z/,'')
