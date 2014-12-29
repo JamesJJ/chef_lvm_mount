@@ -38,7 +38,7 @@ node['lvm_mount']['disks'].each do |_disk|
       _pv_string==''
     end
   end
-  execute "Formating: /dev/#{_prefix}vg/#{_prefix}lv as #{_format}" do
+  execute "Formatting: /dev/#{_prefix}vg/#{_prefix}lv as #{_format}" do
     command "mkfs -t #{_format} /dev/#{_prefix}vg/#{_prefix}lv"
     not_if do 
       LVM_MOUNT.isMounted("/dev/mapper/#{_prefix}vg-#{_prefix}lv") ||

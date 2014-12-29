@@ -29,8 +29,8 @@ module Chef::Recipe::LVM_MOUNT
       Chef::Log.debug("Found mount: " + _m)
       _mountinfo = _m.split(' ')
       _regex = (/[0-9]\Z/.match(path)) ? 
-        Regexp.new('\A' + path + '[0-9]*\Z') :
-        Regexp.new('\A' + path + '\Z')
+        Regexp.new('\A' + path + '\Z') :
+        Regexp.new('\A' + path + '[0-9]*\Z')
       Chef::Log.debug("Using mounted regex: " + _regex.inspect)
       return 1 if _regex.match(_mountinfo[0])
       return 2 if path==_mountinfo[1] 
