@@ -1,4 +1,4 @@
-class Chef::Recipe::LVM_MOUNT
+module Chef::Recipe::LVM_MOUNT
   def initialise
     ENV['PATH'] = '/bin:/usr/bin:/sbin:/usr/sbin'
   end
