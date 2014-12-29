@@ -29,7 +29,9 @@ module Chef::Recipe::LVM_MOUNT
     _fs = IO.readlines('/proc/filesystems')
     _fs.each do |_f|
       _fsinfo = _f.split(' ')
-      accepted = _fsinfo[1].to_s if acceptable.index(_fsinfo[1].to_s) < acceptable.index(accepted)
+      accepted = _fsinfo[1].to_s if 
+        (!acceptable.index(_fsinfo[1].to_s).nil?) && 
+        (acceptable.index(_fsinfo[1].to_s).to_i < acceptable.index(accepted).to_i)
     end
     Chef::Log.info("Using filesystem: #{accepted}")
     return accepted
