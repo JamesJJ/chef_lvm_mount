@@ -38,7 +38,7 @@ module Chef::Recipe::LVM_MOUNT
     accepted = 'ext2'
     _fs = IO.readlines('/proc/filesystems')
     _fs.each do |_f|
-      _fsinfo = _f.split(' ')
+      _fsinfo = _f.split(/\t/)
       next if _fsinfo[0]=='nodev'
       Chef::Log.debug("Found filesystem: " + _fsinfo[1])
       accepted = _fsinfo[1].to_s if 
