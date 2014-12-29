@@ -26,24 +26,31 @@ node['lvm_mount']['disks'].each do |_disk|
   end
   execute "Creating VG: #{_prefix}vg" do
     command "vgcreate -y #{_prefix}vg #{_pv_string}"
-    not_if do LVM_MOUNT.vgExists(_prefix + 'vg') end
+    not_if do
+      LVM_MOUNT.vgExists(_prefix + 'vg') ||
+      _pv_string==''
+    end
   end
   execute "Creating LV: #{_prefix}lv" do
     command "lvcreate -L #{_disk['size']} -n #{_prefix}lv #{_prefix}vg"
-    not_if do LVM_MOUNT.lvExists(_prefix + 'lv') end
+    not_if do
+      LVM_MOUNT.lvExists(_prefix + 'lv') ||
+      _pv_string==''
+    end
   end
   execute "Formating: /dev/#{_prefix}vg/#{_prefix}lv as #{_format}" do
     command "mkfs -t #{_format} /dev/#{_prefix}vg/#{_prefix}lv"
     not_if do 
       LVM_MOUNT.isMounted("/dev/mapper/#{_prefix}vg-#{_prefix}lv") ||
-      LVM_MOUNT.isMounted("/dev/#{_prefix}vg/#{_prefix}lv")
+      LVM_MOUNT.isMounted("/dev/#{_prefix}vg/#{_prefix}lv") ||
+      _pv_string==''
     end
   end
   mount _mountpoint do
-    device "/dev/#{_prefix}vg/#{_prefix}lv"
+    device "/dev/mapper/#{_prefix}vg-#{_prefix}lv"
     fstype _format
     options _disk['mount_options'] || 'auto,defaults'
     action [:mount, :enable]
-  end
+  end unless LVM_MOUNT.isMounted("/dev/mapper/#{_prefix}vg-#{_prefix}lv")
 end
 
