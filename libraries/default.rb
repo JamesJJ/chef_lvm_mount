@@ -39,7 +39,7 @@ module Chef::Recipe::LVM_MOUNT
     return accepted
   end
   def self.pvExists(path)
-    _pv = shell_out!('pvdisplay -c')
+    _pv = shell_out('pvdisplay -c')
     _pv.stdout.each_line {|_pv_line|
       _pv_line.gsub!(/\A\s+/,'')
       _pv_line.gsub!(/\s+\Z/,'')
