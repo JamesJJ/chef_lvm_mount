@@ -40,10 +40,10 @@ module Chef::Recipe::LVM_MOUNT
     _fs.each do |_f|
       _fsinfo = _f.split(/\t/)
       next if _fsinfo[0]=='nodev'
-      Chef::Log.debug("Found filesystem: " + _fsinfo[1])
-      accepted = _fsinfo[1].to_s if 
-        (!acceptable.index(_fsinfo[1].to_s).nil?) && 
-        (acceptable.index(_fsinfo[1].to_s).to_i < acceptable.index(accepted).to_i)
+      _current_index = acceptable.index(accepted) || 98
+      _proposed_index = acceptable.index(_fsinfo[1]) || 99
+      Chef::Log.debug("Found filesystem: " + _fsinfo[1] + ", this: " + _proposed_index + ", existing: " + _current_index)
+      accepted = _fsinfo[1].to_s if _proposed_index < _current_index
     end
     Chef::Log.info("Using filesystem: #{accepted}")
     return accepted
