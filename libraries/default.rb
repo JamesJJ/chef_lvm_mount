@@ -11,6 +11,7 @@ module Chef::Recipe::LVM_MOUNT
     _disks=Array.new()
     _p = IO.readlines('/proc/partitions')
     _p.each do |_d|
+      _d.chomp!
       _pdev = _d.split(' ')[3]
       next if _pdev.nil?
       Chef::Log.debug("Found disk: " + _pdev)
@@ -23,6 +24,7 @@ module Chef::Recipe::LVM_MOUNT
   def self.isMounted(path)
     _mounts = IO.readlines('/proc/mounts')
     _mounts.each do |_m|
+      _m.chomp!
       next unless /\A\//.match(_m)
       Chef::Log.debug("Found mount: " + _m)
       _mountinfo = _m.split(' ')
@@ -38,11 +40,12 @@ module Chef::Recipe::LVM_MOUNT
     accepted = 'ext2'
     _fs = IO.readlines('/proc/filesystems')
     _fs.each do |_f|
+      _f.chomp!
       _fsinfo = _f.split(/\t/)
       next if _fsinfo[0]=='nodev'
       _current_index = acceptable.index(accepted) || 98
       _proposed_index = acceptable.index(_fsinfo[1]) || 99
-      Chef::Log.debug("Found filesystem: " + _fsinfo[1] + ", this: " + _proposed_index + ", existing: " + _current_index)
+      Chef::Log.debug("Found filesystem: " + _fsinfo[1] + ", this: " + _proposed_index.to_s + ", existing: " + _current_index.to_s)
       accepted = _fsinfo[1].to_s if _proposed_index < _current_index
     end
     Chef::Log.info("Using filesystem: #{accepted}")
