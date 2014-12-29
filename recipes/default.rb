@@ -11,7 +11,10 @@ node['lvm_mount']['disks'].each do |_disk|
   _pv_string = ''
   _best_filesystem = LVM_MOUNT.bestFilesystem(node['lvm_mount']['fs_formats'])
   _format = _disk['filesystem'] || _best_filesystem
-  _disk['pv'].each do |_pv|
+  _pvs=(node['lvm_mount']['auto_find_pv']==true) ? 
+    LVM_MOUNT.findDisks(node['lvm_mount']['auto_find_pv_prefixes'],node['lvm_mount']['auto_find_pv_limit']) : 
+    _disk['pv'].dup
+  _pvs.each do |_pv|
     _pvexists = LVM_MOUNT.pvExists(_pv)
     execute "Initialising PV: #{_pv}" do
       command "pvcreate -y #{_pv}"

@@ -2,6 +2,17 @@ class Chef::Recipe::LVM_MOUNT
   def initialise
     ENV['PATH'] = '/bin:/usr/bin:/sbin:/usr/sbin'
   end
+  def findDisks(prefixes,limit)
+    _regex = Regex.new("\A(" + _prefixes.join('|') + ")")
+    _disks=Array.new()
+    _p = IO.readlines('/proc/partitions')
+    _p.each do |_d|
+      _pdev = _d.split(' ')[3]
+      _disks.push(_pdev) if _regex.match(_pdev)
+    end
+    _found = _disks.sort.reverse.take(limit||1).collect {|_d| "/dev/" + _d }
+    Chef::Log.info("Using disks: " + _found.join(' '))
+  end
   def isMounted(path)
     _mounts = IO.readlines('/proc/mounts')
     _mounts.each do |_m|
