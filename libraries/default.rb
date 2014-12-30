@@ -2,9 +2,11 @@ require 'chef/mixin/shell_out'
 include Chef::Mixin::ShellOut
 
 module Chef::Recipe::LVM_MOUNT
+
   def initialise
     ENV['PATH'] = '/bin:/usr/bin:/sbin:/usr/sbin'
   end
+
   def self.findDisks(prefixes,limit)
     _regex = Regexp.new('\A(' + prefixes.join('|') + ')')
     Chef::Log.debug("Using disk regex: " + _regex.inspect)
@@ -21,6 +23,7 @@ module Chef::Recipe::LVM_MOUNT
     Chef::Log.info("Using disks: " + _found.join(' '))
     return _found
   end
+
   def self.isMounted(path)
     _mounts = IO.readlines('/proc/mounts')
     _mounts.each do |_m|
@@ -37,6 +40,7 @@ module Chef::Recipe::LVM_MOUNT
     end
     return nil
   end
+
   def self.bestFilesystem(acceptable)
     acceptable = [ 'xfs','ext4','ext3','ext2' ] unless acceptable.kind_of?(Array)
     accepted = 'ext2'
@@ -53,6 +57,7 @@ module Chef::Recipe::LVM_MOUNT
     Chef::Log.info("Using filesystem: #{accepted}")
     return accepted
   end
+
   def self.pvExists(path)
     _pv = shell_out!('pvdisplay -c')
     _pv.stdout.each_line {|_pv_line|
@@ -65,6 +70,7 @@ module Chef::Recipe::LVM_MOUNT
     }
     return nil
   end
+
   def self.vgExists(path)
     _vg = shell_out!('vgdisplay -c')
     _vg.stdout.each_line {|_vg_line|
@@ -76,6 +82,7 @@ module Chef::Recipe::LVM_MOUNT
     }
     return nil
   end
+
   def self.lvExists(path)
     _lv = shell_out!('lvdisplay -c')
     _lv.stdout.each_line {|_lv_line|
@@ -88,6 +95,7 @@ module Chef::Recipe::LVM_MOUNT
     }
     return nil
   end
+
 end
 
 

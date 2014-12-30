@@ -16,41 +16,53 @@ node['lvm_mount']['disks'].each do |_disk|
   _pvs=(node['lvm_mount']['auto_find_pv']==true) ? 
     LVM_MOUNT.findDisks(node['lvm_mount']['auto_find_pv_prefixes'],node['lvm_mount']['auto_find_pv_limit']) : 
     _disk['pv'].dup
+  
+  begin
+    Chef::Log.fatal('No disks available to use')
+    return
+  end if _pvs.nil?
+
+  begin
+    Chef::Log.fatal("VG #{_prefix}vg already exists")
+    return
+  end if LVM_MOUNT.vgExists(_prefix + 'vg')
+  begin
+    Chef::Log.fatal("LV #{_prefix}lv already exists")
+    return
+  end if LVM_MOUNT.lvExists(_prefix + 'lv')
+  begin
+    Chef::Log.fatal("LVM already mounted /dev/mapper/#{_prefix}vg-#{_prefix}lv")
+    return
+  end if LVM_MOUNT.isMounted("/dev/mapper/#{_prefix}vg-#{_prefix}lv") || LVM_MOUNT.isMounted("/dev/#{_prefix}vg/#{_prefix}lv")
+
   _pvs.each do |_pv|
-    _pvexists = LVM_MOUNT.pvExists(_pv)
+    begin
+      Chef::Log.fatal("PV #{_pv} already exists")
+      return
+    end if LVM_MOUNT.pvExists(_pv)
     execute "Initialising PV: #{_pv}" do
       command "pvcreate -y #{_pv}"
-      not_if do _pvexists end
     end
-    _pv_string << "#{_pv} " unless _pvexists
+    _pv_string << "#{_pv} "
   end
+
   execute "Creating VG: #{_prefix}vg" do
     command "vgcreate -y #{_prefix}vg #{_pv_string}"
-    not_if do
-      LVM_MOUNT.vgExists(_prefix + 'vg') ||
-      _pv_string==''
-    end
   end
+
   execute "Creating LV: #{_prefix}lv" do
     command "lvcreate -L #{_disk['size']} -n #{_prefix}lv #{_prefix}vg"
-    not_if do
-      LVM_MOUNT.lvExists(_prefix + 'lv') ||
-      _pv_string==''
-    end
   end
+
   execute "Formatting: /dev/#{_prefix}vg/#{_prefix}lv as #{_format}" do
     command "mkfs -t #{_format} /dev/#{_prefix}vg/#{_prefix}lv"
-    not_if do 
-      LVM_MOUNT.isMounted("/dev/mapper/#{_prefix}vg-#{_prefix}lv") ||
-      LVM_MOUNT.isMounted("/dev/#{_prefix}vg/#{_prefix}lv") ||
-      _pv_string==''
-    end
   end
+
   mount _mountpoint do
     device "/dev/mapper/#{_prefix}vg-#{_prefix}lv"
     fstype _format
     options _disk['mount_options'] || 'auto,defaults'
     action [:mount, :enable]
-  end unless LVM_MOUNT.isMounted("/dev/mapper/#{_prefix}vg-#{_prefix}lv")
+  end
 end
 
