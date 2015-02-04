@@ -35,6 +35,13 @@ node['lvm_mount']['disks'].each do |_disk|
     return
   end if LVM_MOUNT.isMounted("/dev/mapper/#{_prefix}vg-#{_prefix}lv") || LVM_MOUNT.isMounted("/dev/#{_prefix}vg/#{_prefix}lv")
 
+  directory _mountpoint do
+    group 'root'
+    owner 'root'
+    mode '0755'
+    recursive true
+  end unless File.Directory?(_mountpoint)
+
   _pvs.each do |_pv|
     begin
       Chef::Log.fatal("PV #{_pv} already exists")
