@@ -40,7 +40,7 @@ node['lvm_mount']['disks'].each do |_disk|
     owner 'root'
     mode '0755'
     recursive true
-  end unless File.Directory?(_mountpoint)
+  end unless File.directory?(_mountpoint)
 
   _pvs.each do |_pv|
     begin
